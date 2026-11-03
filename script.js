@@ -21,6 +21,7 @@ let currentHistoryCode = null;
 let sortCol = null;
 let sortDir = 1; // 1 = asc, -1 = desc
 let searchQuery = "";
+let mfApiRequestId = 0;
 
 const CHART_CONFIG = {
   tension: 0.4,
@@ -151,6 +152,44 @@ function parseCSV(text) {
   return rows;
 }
 
+function fetchMfData(id) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `mfApiCallback_${Date.now()}_${++mfApiRequestId}`;
+    const script = document.createElement("script");
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error("MF API request timed out."));
+    }, 20000);
+
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      delete window[callbackName];
+      script.remove();
+    };
+
+    window[callbackName] = (data) => {
+      cleanup();
+      if (data?.error) {
+        reject(new Error(data.error));
+      } else {
+        resolve(data);
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Unable to load MF API data."));
+    };
+
+    const url = new URL(SCRIPT_URL);
+    url.searchParams.set("action", "mf");
+    url.searchParams.set("id", id);
+    url.searchParams.set("callback", callbackName);
+    script.src = url.toString();
+    document.head.appendChild(script);
+  });
+}
+
 // ─────────────────────────────────────────────
 //  FORM
 // ─────────────────────────────────────────────
@@ -247,8 +286,7 @@ async function init() {
     // ✅ Parallel fetch — all funds at once
     const apiResults = await Promise.all(
       ids.map((id) =>
-        fetch(`https://api.mfapi.in/mf/${id}`)
-          .then((r) => r.json())
+        fetchMfData(id)
           .catch(() => null),
       ),
     );
