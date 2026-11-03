@@ -51,8 +51,8 @@ function doPost(e) {
       ContentService.MimeType.TEXT,
     );
   } catch (error) {
-    return ContentService.createTextOutput("Error: " + error.toString()).setMimeType(
-      ContentService.MimeType.TEXT,
-    );
+    return ContentService.createTextOutput(
+      "Error: " + error.toString(),
+    ).setMimeType(ContentService.MimeType.TEXT);
   }
 }

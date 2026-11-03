@@ -285,10 +285,7 @@ async function init() {
 
     // ✅ Parallel fetch — all funds at once
     const apiResults = await Promise.all(
-      ids.map((id) =>
-        fetchMfData(id)
-          .catch(() => null),
-      ),
+      ids.map((id) => fetchMfData(id).catch(() => null)),
     );
 
     let portfolioArray = [];
