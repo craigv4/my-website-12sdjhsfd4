@@ -4,7 +4,7 @@
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqGiMZpcrNGa6vTUxck82cFgTbC3FSTMlQm69T5buwWl_znhJg_PozTOOO2oof3xGV55JVj-AEEvf1/pub?gid=0&single=true&output=csv";
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbzCMQ8n2nXcF7x8Rm-7g6isvcXAFc0RrrRpae6-ZNlKXgWwW7Ihn9tlgv8d9w4AZwvslg/exec";
+  "https://script.google.com/macros/s/AKfycbxWz4STlNSsH5cgOLZM6PlHqIFNxLMMdIuTfQh_tegVeB8WDNosvYF8YplTjO7MtLIhWw/exec";
 
 // ─────────────────────────────────────────────
 //  STATE
