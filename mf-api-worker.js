@@ -6,7 +6,7 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
       "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Vary": "Origin",
+      Vary: "Origin",
     };
 
     if (origin !== ALLOWED_ORIGIN) {
