@@ -2,9 +2,9 @@
 //  CONFIG
 // ─────────────────────────────────────────────
 const SHEET_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqGiMZpcrNGa6vTUxck82cFgTbC3FSTMlQm69T5buwWl_znhJg_PozTOOO2oof3xGV55JVj-AEEvf1/pub?gid=0&single=true&output=csv";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqGiMZpcrNGa6vTUxck82cFgTbC3FSTMlQm69T5buwWl_znhJg_PozTOOO2oof3xGV55JVj-AEEvf1/pub?output=csv";
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxWz4STlNSsH5cgOLZM6PlHqIFNxLMMdIuTfQh_tegVeB8WDNosvYF8YplTjO7MtLIhWw/exec";
+  "https://script.google.com/macros/s/AKfycbwGKweuusqdTWx80CtKswE8GEpPsdIaCqaXcIc83MEg1G8hkrPFhGz0JRYRQ0dHQOP7bA/exec";
 
 // ─────────────────────────────────────────────
 //  STATE
@@ -287,11 +287,17 @@ async function init() {
     const apiResults = await Promise.all(
       ids.map((id) => fetchMfData(id).catch(() => null)),
     );
+    const failedCount = apiResults.filter(
+      (result) => !result?.data?.length,
+    ).length;
+    if (failedCount === ids.length) {
+      throw new Error("No fund data was returned by the Apps Script web app.");
+    }
 
     let portfolioArray = [];
     ids.forEach((id, idx) => {
       const json = apiResults[idx];
-      if (!json) return;
+      if (!json?.data?.length) return;
 
       const currentNav = json.data ? parseFloat(json.data[0]?.nav) : 0;
       const prevNav =
@@ -341,10 +347,18 @@ async function init() {
     globalData = portfolioArray;
     renderTable();
     renderAllocationChart();
-    showToast("Portfolio synced!", "success");
+    showToast(
+      failedCount
+        ? "Some funds could not be loaded. Check the Apps Script deployment and fund codes."
+        : "Portfolio synced!",
+      failedCount ? "warning" : "success",
+    );
   } catch (err) {
     console.error(err);
-    showToast("Failed to load portfolio. Check your connection.", "error");
+    showToast(
+      "Failed to load portfolio. Check Apps Script access, deployment, and connection.",
+      "error",
+    );
   } finally {
     setLoading(false);
   }

@@ -33,6 +33,10 @@ function doGet(e) {
   }
 }
 
+function authorizeUrlFetch() {
+  UrlFetchApp.fetch("https://api.mfapi.in/mf/122639");
+}
+
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
